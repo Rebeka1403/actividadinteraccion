@@ -12,6 +12,9 @@
           arSystem = sceneEl.systems["mindar-image-system"];
         });
 
+        // Texto de interfaz
+        const statusText = document.querySelector("#statusText");
+
         // Botones de control AR
         const startButton = document.querySelector("#example-start-button");
         const stopButton = document.querySelector("#example-stop-button");
@@ -19,49 +22,67 @@
         const pauseKeepVideoButton = document.querySelector("#example-pause-keep-video-button");
         const unpauseButton = document.querySelector("#example-unpause-button");
 
-        startButton.addEventListener('click', () => arSystem.start());
-        stopButton.addEventListener('click', () => arSystem.stop());
+        startButton.addEventListener('click', () => {
+          arSystem.start();
+          statusText.innerText = "📌 Escanea tu target";
+        });
+        stopButton.addEventListener('click', () => {
+          arSystem.stop();
+          statusText.innerText = "AR detenido";
+        });
         pauseButton.addEventListener('click', () => arSystem.pause());
         pauseKeepVideoButton.addEventListener('click', () => arSystem.pause(true));
         unpauseButton.addEventListener('click', () => arSystem.unpause());
 
-        // Modelos originales
+        // Modelos
         const smurfEl = document.querySelector('#smurfModelEl');
         const robotEl = document.querySelector('#robotModelEl');
 
-        // Nuevos modelos a reemplazar
         const newModels = {
-          smurf: 'dino.glb',       // al tocar smurf cambia a dino
-          robot: 'cathat.glb'      // al tocar robot cambia a cathat
+          smurf: 'dino.glb',
+          robot: 'cathat.glb'
         };
 
-        // Función para cambiar modelo al tocar
         function changeModel(event) {
           const el = event.currentTarget;
           if (el === smurfEl) {
             el.setAttribute('gltf-model', newModels.smurf);
-            el.setAttribute('scale', '0.5 0.5 0.5'); 
+            el.setAttribute('scale', '0.5 0.5 0.5');
           } else if (el === robotEl) {
             el.setAttribute('gltf-model', newModels.robot);
-            el.setAttribute('scale', '0.5 0.5 0.5'); // ajusta escala para cathat
+            el.setAttribute('scale', '0.3 0.3 0.3');
           }
         }
 
-        // Detectar click o toque
         smurfEl.addEventListener('click', changeModel);
         smurfEl.addEventListener('touchstart', changeModel);
-
         robotEl.addEventListener('click', changeModel);
         robotEl.addEventListener('touchstart', changeModel);
 
         // Eventos AR
         const exampleTarget = document.querySelector('#example-target');
-        exampleTarget.addEventListener("targetFound", () => console.log("target found"));
-        exampleTarget.addEventListener("targetLost", () => console.log("target lost"));
+        exampleTarget.addEventListener("targetFound", () => {
+          console.log("target found");
+          statusText.innerText = "👉 Toca el modelo";
+        });
+        exampleTarget.addEventListener("targetLost", () => {
+          console.log("target lost");
+          statusText.innerText = "📌 Escanea tu target";
+        });
       });
     </script>
   </head>
   <body>
+    <!-- Texto dinámico -->
+    <div id="statusText" 
+         style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+                background: rgba(0,0,0,0.6); color: white; padding: 10px 16px; 
+                border-radius: 10px; font-family: sans-serif; font-size: 16px; 
+                z-index: 2000; text-align: center;">
+      📌 Escanea tu target
+    </div>
+
+    <!-- Botones AR -->
     <div style="position: absolute; z-index: 1000">
       <button id="example-start-button">Start</button>
       <button id="example-pause-button">Pause</button>
@@ -70,27 +91,33 @@
       <button id="example-stop-button">Stop</button>
     </div>
 
-    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false" 
+             color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
+             vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
-      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+      <a-camera position="0 0 0" look-controls="enabled: false" 
+                cursor="fuse: false; rayOrigin: mouse;" 
+                raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
 
       <a-assets>
-        <!-- Modelos originales -->
         <a-asset-item id="robotModel" src="robot.glb"></a-asset-item>
         <a-asset-item id="smurfModel" src="smurf.glb"></a-asset-item>
-        <!-- Nuevos modelos para reemplazo -->
         <a-asset-item id="dinoModel" src="dino.glb"></a-asset-item>
         <a-asset-item id="catModel" src="cathat.glb"></a-asset-item>
       </a-assets>
 
       <!-- Target con modelo Smurf -->
       <a-entity id="example-target" mindar-image-target="targetIndex: 0">
-        <a-gltf-model id="smurfModelEl" src="#smurfModel" rotation="0 0 0" position="0 0 0" scale="1 1 1" animation-mixer class="clickable"></a-gltf-model>
+        <a-gltf-model id="smurfModelEl" src="#smurfModel" 
+                      rotation="0 0 0" position="0 0 0" scale="1 1 1" 
+                      animation-mixer class="clickable"></a-gltf-model>
       </a-entity>
 
       <!-- Target con modelo Robot -->
       <a-entity mindar-image-target="targetIndex: 1">
-        <a-gltf-model id="robotModelEl" src="#robotModel" rotation="0 0 0" position="0 0 0" scale="0.1 0.1 0.1" animation-mixer class="clickable"></a-gltf-model>
+        <a-gltf-model id="robotModelEl" src="#robotModel" 
+                      rotation="0 0 0" position="0 0 0" scale="0.1 0.1 0.1" 
+                      animation-mixer class="clickable"></a-gltf-model>
       </a-entity>
 
     </a-scene>
