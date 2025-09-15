@@ -31,8 +31,8 @@
 
         // Nuevos modelos a reemplazar
         const newModels = {
-          smurf: 'dino.glb',      // al tocar smurf cambia a dino
-          robot: 'tiburon.glb'    // al tocar robot cambia a tiburon
+          smurf: '#dinoModel',     // al tocar smurf cambia a dino
+          robot: '#cathatModel'    // al tocar robot cambia a cathat
         };
 
         // Función para cambiar modelo al tocar
@@ -40,10 +40,10 @@
           const el = event.currentTarget;
           if (el === smurfEl) {
             el.setAttribute('gltf-model', newModels.smurf);
-            el.setAttribute('scale', ' 0.5 0.5 0.5 '); // ajusta escala según tu modelo
+            el.setAttribute('scale', '0.5 0.5 0.5'); 
           } else if (el === robotEl) {
             el.setAttribute('gltf-model', newModels.robot);
-            el.setAttribute('scale', ' 10 10 10 '); // ajusta escala según tu modelo
+            el.setAttribute('scale', '0.3 0.3 0.3'); // ajusta según tu modelo cathat.glb
           }
         }
 
@@ -70,9 +70,16 @@
       <button id="example-stop-button">Stop</button>
     </div>
 
-    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false" 
+             color-space="sRGB" 
+             renderer="colorManagement: true, physicallyCorrectLights" 
+             vr-mode-ui="enabled: false" 
+             device-orientation-permission-ui="enabled: false">
       
-      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+      <a-camera position="0 0 0" 
+                look-controls="enabled: false" 
+                cursor="fuse: false; rayOrigin: mouse;" 
+                raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
 
       <a-assets>
         <!-- Modelos originales -->
@@ -80,17 +87,29 @@
         <a-asset-item id="smurfModel" src="smurf.glb"></a-asset-item>
         <!-- Nuevos modelos para reemplazo -->
         <a-asset-item id="dinoModel" src="dino.glb"></a-asset-item>
-        <a-asset-item id="tiburonModel" src="tiburon.glb"></a-asset-item>
+        <a-asset-item id="cathatModel" src="cathat.glb"></a-asset-item>
       </a-assets>
 
       <!-- Target con modelo Smurf -->
       <a-entity id="example-target" mindar-image-target="targetIndex: 0">
-        <a-gltf-model id="smurfModelEl" src="#smurfModel" rotation="0 0 0" position="0 0 0" scale="1 1 1" animation-mixer class="clickable"></a-gltf-model>
+        <a-gltf-model id="smurfModelEl" 
+                      src="#smurfModel" 
+                      rotation="0 0 0" 
+                      position="0 0 0" 
+                      scale="1 1 1" 
+                      animation-mixer 
+                      class="clickable"></a-gltf-model>
       </a-entity>
 
       <!-- Target con modelo Robot -->
       <a-entity mindar-image-target="targetIndex: 1">
-        <a-gltf-model id="robotModelEl" src="#robotModel" rotation="0 0 0" position="0 0 0" scale="0.1 0.1 0.1" animation-mixer class="clickable"></a-gltf-model>
+        <a-gltf-model id="robotModelEl" 
+                      src="#robotModel" 
+                      rotation="0 0 0" 
+                      position="0 0 0" 
+                      scale="0.1 0.1 0.1" 
+                      animation-mixer 
+                      class="clickable"></a-gltf-model>
       </a-entity>
 
     </a-scene>
