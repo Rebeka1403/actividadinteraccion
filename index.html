@@ -1,40 +1,9 @@
-<html> 
+<html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <style>
-      /* Botón grande y centrado para Start */
-      #example-start-button {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 20px 40px;
-        font-size: 24px;
-        background: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        z-index: 3000;
-      }
-
-      /* Contenedor de los demás botones */
-      #controls {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 2000;
-      }
-
-      #controls button {
-        margin: 2px;
-        padding: 5px 10px;
-        font-size: 14px;
-      }
-    </style>
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         const sceneEl = document.querySelector("a-scene");
@@ -43,31 +12,26 @@
           arSystem = sceneEl.systems["mindar-image-system"];
         });
 
-        // Texto dinámico
+        // Texto de interfaz
         const statusText = document.querySelector("#statusText");
-        statusText.style.display = "none";
+        statusText.style.display = "none"; // oculto al inicio
 
-        // Botones
+        // Botones de control AR
         const startButton = document.querySelector("#example-start-button");
         const stopButton = document.querySelector("#example-stop-button");
         const pauseButton = document.querySelector("#example-pause-button");
         const pauseKeepVideoButton = document.querySelector("#example-pause-keep-video-button");
         const unpauseButton = document.querySelector("#example-unpause-button");
 
-        // Start grande en centro
         startButton.addEventListener("click", () => {
           arSystem.start();
-          statusText.innerText = "📌 Escanea tu target";
-          statusText.style.display = "block";
-          startButton.style.display = "none"; // ocultar start al presionarlo
+          statusText.innerText = " Escanea tu target";
+          statusText.style.display = "block"; // se muestra solo al iniciar AR
         });
-
         stopButton.addEventListener("click", () => {
           arSystem.stop();
-          statusText.style.display = "none";
-          startButton.style.display = "block"; // mostrar start de nuevo si se detiene
+          statusText.style.display = "none"; // ocultar al detener
         });
-
         pauseButton.addEventListener("click", () => arSystem.pause());
         pauseKeepVideoButton.addEventListener("click", () => arSystem.pause(true));
         unpauseButton.addEventListener("click", () => arSystem.unpause());
@@ -97,14 +61,16 @@
         robotEl.addEventListener("click", changeModel);
         robotEl.addEventListener("touchstart", changeModel);
 
-        // Eventos para todos los targets
+        // --- Eventos AR para TODOS los targets ---
         const targets = document.querySelectorAll("[mindar-image-target]");
         targets.forEach((target) => {
           target.addEventListener("targetFound", () => {
+            console.log("target found");
             statusText.innerText = "👉 Toca el modelo";
           });
           target.addEventListener("targetLost", () => {
-            statusText.innerText = "📌 Escanea tu target";
+            console.log("target lost");
+            statusText.innerText = " Escanea tu target";
           });
         });
       });
@@ -113,18 +79,16 @@
   <body>
     <!-- Texto dinámico -->
     <div id="statusText" 
-         style="position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
+         style="position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
                 background: rgba(0,0,0,0.6); color: white; padding: 10px 16px; 
                 border-radius: 10px; font-family: sans-serif; font-size: 16px; 
                 z-index: 2000; text-align: center; display: none;">
-      📌 Escanea tu target
+       Escanea tu target
     </div>
 
-    <!-- Botón Start (centrado y grande al inicio) -->
-    <button id="example-start-button">Start</button>
-
-    <!-- Otros botones arriba -->
-    <div id="controls">
+    <!-- Botones AR -->
+    <div style="position: absolute; z-index: 1000">
+      <button id="example-start-button">Start</button>
       <button id="example-pause-button">Pause</button>
       <button id="example-pause-keep-video-button">Pause (keep video)</button>
       <button id="example-unpause-button">UnPause</button>
@@ -146,6 +110,20 @@
         <a-asset-item id="catModel" src="cathat.glb"></a-asset-item>
       </a-assets>
 
-      <!-- Target Smurf -->
+      <!-- Target con modelo Smurf -->
       <a-entity id="example-target" mindar-image-target="targetIndex: 0">
         <a-gltf-model id="smurfModelEl" src="#smurfModel" 
+                      rotation="0 0 0" position="0 0 0" scale="1 1 1" 
+                      animation-mixer class="clickable"></a-gltf-model>
+      </a-entity>
+
+      <!-- Target con modelo Robot -->
+      <a-entity mindar-image-target="targetIndex: 1">
+        <a-gltf-model id="robotModelEl" src="#robotModel" 
+                      rotation="0 0 0" position="0 0 0" scale="0.1 0.1 0.1" 
+                      animation-mixer class="clickable"></a-gltf-model>
+      </a-entity>
+
+    </a-scene>
+  </body>
+</html>
