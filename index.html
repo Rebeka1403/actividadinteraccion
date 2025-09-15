@@ -3,41 +3,35 @@
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const sceneEl = document.querySelector("a-scene");
       let arSystem;
-      sceneEl.addEventListener("loaded", function () {
+      sceneEl.addEventListener("loaded", () => {
         arSystem = sceneEl.systems["mindar-image-system"];
       });
 
       // Texto de interfaz
       const statusText = document.querySelector("#statusText");
-      statusText.style.display = "none"; // oculto al inicio
+      statusText.style.display = "none";
 
-      // Botones de control AR
+      // Botones
       const startButton = document.querySelector("#example-start-button");
       const stopButton = document.querySelector("#example-stop-button");
-      const pauseButton = document.querySelector("#example-pause-button");
-      const pauseKeepVideoButton = document.querySelector("#example-pause-keep-video-button");
-      const unpauseButton = document.querySelector("#example-unpause-button");
 
       startButton.addEventListener("click", () => {
         arSystem.start();
         statusText.innerText = " Escanea tu target";
-        statusText.style.display = "block"; 
-        startButton.style.display = "none"; // Desaparece al presionar
+        statusText.style.display = "block";
+        startButton.style.display = "none"; // desaparece al iniciar
       });
 
       stopButton.addEventListener("click", () => {
         arSystem.stop();
-        statusText.style.display = "none"; 
-        startButton.style.display = "block"; // Vuelve a aparecer al detener
+        statusText.style.display = "none";
+        startButton.style.display = "block"; // reaparece al detener
       });
-
-      pauseButton.addEventListener("click", () => arSystem.pause());
-      pauseKeepVideoButton.addEventListener("click", () => arSystem.pause(true));
-      unpauseButton.addEventListener("click", () => arSystem.unpause());
 
       // Modelos
       const smurfEl = document.querySelector("#smurfModelEl");
@@ -55,7 +49,7 @@
           el.setAttribute("scale", "0.5 0.5 0.5");
         } else if (el === robotEl) {
           el.setAttribute("gltf-model", newModels.robot);
-          el.setAttribute("scale", "0.3 0.3 0.3");
+          el.setAttribute("scale", "0.5 0.5 0.5"); // <- aquí cambias tamaño de cathat
         }
       }
 
@@ -64,15 +58,12 @@
       robotEl.addEventListener("click", changeModel);
       robotEl.addEventListener("touchstart", changeModel);
 
-      // --- Eventos AR para TODOS los targets ---
-      const targets = document.querySelectorAll("[mindar-image-target]");
-      targets.forEach((target) => {
+      // Eventos AR
+      document.querySelectorAll("[mindar-image-target]").forEach(target => {
         target.addEventListener("targetFound", () => {
-          console.log("target found");
           statusText.innerText = "👉 Toca el modelo";
         });
         target.addEventListener("targetLost", () => {
-          console.log("target lost");
           statusText.innerText = " Escanea tu target";
         });
       });
@@ -99,16 +90,13 @@
       background-color: #0056b3;
     }
 
-    /* Otros botones en la esquina superior izquierda */
-    #other-buttons {
+    /* Botón Stop en la esquina superior izquierda */
+    #example-stop-button {
       position: absolute;
       top: 10px;
       left: 10px;
-      z-index: 1000;
-    }
-    #other-buttons button {
-      margin: 5px;
       padding: 6px 12px;
+      z-index: 1000;
     }
   </style>
 </head>
@@ -123,16 +111,9 @@
      Escanea tu target
   </div>
 
-  <!-- Botón Start centrado -->
+  <!-- Botones -->
   <button id="example-start-button">Start</button>
-
-  <!-- Otros botones en la esquina -->
-  <div id="other-buttons">
-    <button id="example-pause-button">Pause</button>
-    <button id="example-pause-keep-video-button">Pause (keep video)</button>
-    <button id="example-unpause-button">UnPause</button>
-    <button id="example-stop-button">Stop</button>
-  </div>
+  <button id="example-stop-button">Stop</button>
 
   <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false" 
            color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
