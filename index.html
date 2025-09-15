@@ -11,49 +11,41 @@
         sceneEl.addEventListener('loaded', function () {
           arSystem = sceneEl.systems["mindar-image-system"];
         });
-        const exampleTarget = document.querySelector('#example-target');
-        const examplePlane = document.querySelector('#example-plane');
+
         const startButton = document.querySelector("#example-start-button");
         const stopButton = document.querySelector("#example-stop-button");
         const pauseButton = document.querySelector("#example-pause-button");
         const pauseKeepVideoButton = document.querySelector("#example-pause-keep-video-button");
         const unpauseButton = document.querySelector("#example-unpause-button");
-        startButton.addEventListener('click', () => {
-          console.log("start");
-          arSystem.start(); // start AR 
-        });
-        stopButton.addEventListener('click', () => {
-          arSystem.stop(); // stop AR 
-        });
-        pauseButton.addEventListener('click', () => {
-          arSystem.pause(); // pause AR, pause video
-        });
-        pauseKeepVideoButton.addEventListener('click', () => {
-          arSystem.pause(true); // pause AR, keep video
-        });
-        unpauseButton.addEventListener('click', () => {
-          arSystem.unpause(); // unpause AR and video
-        });
-        // arReady event triggered when ready
-        sceneEl.addEventListener("arReady", (event) => {
-          // console.log("MindAR is ready")
-        });
-        // arError event triggered when something went wrong. Mostly browser compatbility issue
-        sceneEl.addEventListener("arError", (event) => {
-          // console.log("MindAR failed to start")
-        });
-        // detect target found
-        exampleTarget.addEventListener("targetFound", event => {
-          console.log("target found");
-        });
-        // detect target lost
-        exampleTarget.addEventListener("targetLost", event => {
-          console.log("target lost");
-        });
-        // detect click event
-        examplePlane.addEventListener("click", event => {
-          console.log("plane click");
-        });
+
+        startButton.addEventListener('click', () => arSystem.start());
+        stopButton.addEventListener('click', () => arSystem.stop());
+        pauseButton.addEventListener('click', () => arSystem.pause());
+        pauseKeepVideoButton.addEventListener('click', () => arSystem.pause(true));
+        unpauseButton.addEventListener('click', () => arSystem.unpause());
+
+        const exampleTarget = document.querySelector('#example-target');
+        const modelEl = document.querySelector('#modelEl');
+
+        // Función para cambiar el modelo
+        function changeModel() {
+          const currentSrc = modelEl.getAttribute('gltf-model');
+          if (currentSrc === '#dinoModel') {
+            modelEl.setAttribute('gltf-model', '#tiburonModel');
+            modelEl.setAttribute('scale', '0.2 0.2 0.2'); // Ajusta escala si es necesario
+          } else {
+            modelEl.setAttribute('gltf-model', '#dinoModel');
+            modelEl.setAttribute('scale', '0.2 0.2 0.2'); // Ajusta escala si es necesario
+          }
+        }
+
+        // Detectar click o toque sobre el modelo
+        modelEl.addEventListener("click", changeModel);
+        modelEl.addEventListener("touchstart", changeModel);
+
+        // Eventos AR
+        exampleTarget.addEventListener("targetFound", () => console.log("target found"));
+        exampleTarget.addEventListener("targetLost", () => console.log("target lost"));
       });
     </script>
   </head>
@@ -65,25 +57,19 @@
       <button id="example-unpause-button">UnPause</button>
       <button id="example-stop-button">Stop</button>
     </div>
-    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
 
-      <!-- Cámara -->
+    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      
       <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
 
-      <!-- Modelos GLB -->
       <a-assets>
-        <a-asset-item id="robotModel" src="robot.glb"></a-asset-item>
-        <a-asset-item id="smurfModel" src="smurf.glb"></a-asset-item>
+        <a-asset-item id="dinoModel" src="dino.glb"></a-asset-item>
+        <a-asset-item id="tiburonModel" src="tiburon.glb"></a-asset-item>
       </a-assets>
 
-      <!-- Smurf target -->
+      <!-- Target con modelo inicial -->
       <a-entity id="example-target" mindar-image-target="targetIndex: 0">
-        <a-gltf-model id="smurfModelEl" src="#smurfModel" rotation="0 0 0" position="0 0 0" scale="1 1 1" animation-mixer class="clickable"></a-gltf-model>
-      </a-entity>
-
-      <!-- Robot target -->
-      <a-entity mindar-image-target="targetIndex: 1">
-        <a-gltf-model id="robotModelEl" src="#robotModel" rotation="0 0 0" position="0 0 0" scale="0.1 0.1 0.1" animation-mixer class="clickable"></a-gltf-model>
+        <a-gltf-model id="modelEl" src="#dinoModel" rotation="0 0 0" position="0 0 0" scale="0.2 0.2 0.2" animation-mixer class="clickable"></a-gltf-model>
       </a-entity>
 
     </a-scene>
