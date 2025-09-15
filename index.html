@@ -1,123 +1,45 @@
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        const sceneEl = document.querySelector('a-scene');
-        let arSystem;
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const smurfModelEl = document.querySelector('#smurfModelEl');
+    const robotModelEl = document.querySelector('#robotModelEl');
 
-        sceneEl.addEventListener('loaded', function () {
-          arSystem = sceneEl.systems["mindar-image-system"];
-        });
+    const smurfTargetEl = document.querySelector('[mindar-image-target="targetIndex: 0"]');
+    const robotTargetEl = document.querySelector('[mindar-image-target="targetIndex: 1"]');
 
-        // Botones
-        const startButton = document.querySelector("#example-start-button");
-        const stopButton = document.querySelector("#example-stop-button");
-        const pauseButton = document.querySelector("#example-pause-button");
-        const pauseKeepVideoButton = document.querySelector("#example-pause-keep-video-button");
-        const unpauseButton = document.querySelector("#example-unpause-button");
+    // Crear Dino invisible
+    const dinoEl = document.createElement('a-gltf-model');
+    dinoEl.setAttribute('id', 'dinoModelEl');
+    dinoEl.setAttribute('src', '#dinoModel');
+    dinoEl.setAttribute('scale', '1 1 1');
+    dinoEl.setAttribute('position', '0 0 0');
+    dinoEl.setAttribute('animation-mixer', '');
+    dinoEl.setAttribute('visible', 'false');
+    smurfTargetEl.appendChild(dinoEl);
 
-        startButton.addEventListener('click', () => arSystem.start());
-        stopButton.addEventListener('click', () => arSystem.stop());
-        pauseButton.addEventListener('click', () => arSystem.pause());
-        pauseKeepVideoButton.addEventListener('click', () => arSystem.pause(true));
-        unpauseButton.addEventListener('click', () => arSystem.unpause());
+    // Crear Ditiburón invisible
+    const ditiburEl = document.createElement('a-gltf-model');
+    ditiburEl.setAttribute('id', 'tiburonModelEl');
+    ditiburEl.setAttribute('src', '#tiburonModel');
+    ditiburEl.setAttribute('scale', '1 1 1');
+    ditiburEl.setAttribute('position', '0 0 0');
+    ditiburEl.setAttribute('animation-mixer', '');
+    ditiburEl.setAttribute('visible', 'false');
+    robotTargetEl.appendChild(ditiburEl);
 
-        // Nuestras nuevas interacciones con modelos
-        const smurfTargetEl = document.querySelector('[mindar-image-target="targetIndex: 0"]');
-        const robotTargetEl = document.querySelector('[mindar-image-target="targetIndex: 1"]');
+    // Al tocar Smurf → desaparece Smurf y aparece Dino
+    smurfModelEl.addEventListener('click', () => {
+      console.log("Tocaste al Smurf! Smurf desaparece, aparece Dino");
+      smurfModelEl.setAttribute('visible', 'false'); // desaparece Smurf
+      dinoEl.setAttribute('visible', 'true'); // aparece Dino
+    });
 
-        // Crear Dino invisible
-        const dinoEl = document.createElement('a-gltf-model');
-        dinoEl.setAttribute('id', 'dinoModelEl');
-        dinoEl.setAttribute('src', '#dinoModel');
-        dinoEl.setAttribute('scale', '0.5 0.5 0.5');
-        dinoEl.setAttribute('position', '0 0 0');
-        dinoEl.setAttribute('animation-mixer', '');
-        dinoEl.setAttribute('visible', 'false');
-        smurfTargetEl.appendChild(dinoEl);
+    // Al tocar Robot → desaparece Robot y aparece Tiburón
+    robotModelEl.addEventListener('click', () => {
+      console.log("Tocaste al Robot! Robot desaparece, aparece tiburón");
+      robotModelEl.setAttribute('visible', 'false'); // desaparece Robot
+      ditiburEl.setAttribute('visible', 'true'); // aparece tiburón
+    });
+  });
+</script>
 
-        // Crear Ditiburón invisible
-        const ditiburEl = document.createElement('a-gltf-model');
-        ditiburEl.setAttribute('id', 'ditiburModelEl');
-        ditiburEl.setAttribute('src', '#ditiburModel');
-        ditiburEl.setAttribute('scale', '0.5 0.5 0.5');
-        ditiburEl.setAttribute('position', '0 0 0');
-        ditiburEl.setAttribute('animation-mixer', '');
-        ditiburEl.setAttribute('visible', 'false');
-        robotTargetEl.appendChild(ditiburEl);
 
-        // Evento click Smurf → mostrar Dino
-        const smurfModelEl = document.querySelector('#smurfModelEl');
-        smurfModelEl.addEventListener('click', () => {
-          console.log("Tocaste al Smurf! Aparece Dino");
-          dinoEl.setAttribute('visible', 'true');
-        });
-
-        // Evento click Robot → mostrar Ditiburón
-        const robotModelEl = document.querySelector('#robotModelEl');
-        robotModelEl.addEventListener('click', () => {
-          console.log("Tocaste al Robot! Aparece Ditiburón");
-          ditiburEl.setAttribute('visible', 'true');
-        });
-      });
-    </script>
-  </head>
-  <body>
-    <div style="position: absolute; z-index: 1000">
-      <button id="example-start-button">Start</button>
-      <button id="example-pause-button">Pause</button>
-      <button id="example-pause-keep-video-button">Pause (keep video)</button>
-      <button id="example-unpause-button">UnPause</button>
-      <button id="example-stop-button">Stop</button>
-    </div>
-
-    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false"
-             color-space="sRGB"
-             renderer="colorManagement: true, physicallyCorrectLights"
-             vr-mode-ui="enabled: false"
-             device-orientation-permission-ui="enabled: false">
-
-      <!-- Modelos originales -->
-      <a-assets>
-        <a-asset-item id="robotModel" src="robot.glb"></a-asset-item>
-        <a-asset-item id="smurfModel" src="smurf.glb"></a-asset-item>
-
-        <!-- Nuevos modelos para interactividad -->
-        <a-asset-item id="dinoModel" src="dino.glb"></a-asset-item>
-        <a-asset-item id="ditiburModel" src="ditiburon.glb"></a-asset-item>
-      </a-assets>
-
-      <!-- Cámara -->
-      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="objects: .clickable"></a-camera>
-
-      <!-- Smurf target -->
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-gltf-model id="smurfModelEl"
-                      src="#smurfModel"
-                      rotation="0 0 0"
-                      position="0 0 0"
-                      scale="1 1 1"
-                      class="clickable"
-                      animation-mixer>
-        </a-gltf-model>
-      </a-entity>
-
-      <!-- Robot target -->
-      <a-entity mindar-image-target="targetIndex: 1">
-        <a-gltf-model id="robotModelEl"
-                      src="#robotModel"
-                      rotation="0 0 0"
-                      position="0 0 0"
-                      scale="0.1 0.1 0.1"
-                      class="clickable"
-                      animation-mixer>
-        </a-gltf-model>
-      </a-entity>
-
-    </a-scene>
-  </body>
-</html>
