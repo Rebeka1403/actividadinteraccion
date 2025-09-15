@@ -11,7 +11,6 @@
         sceneEl.addEventListener('loaded', function () {
           arSystem = sceneEl.systems["mindar-image-system"];
         });
-
         const exampleTarget = document.querySelector('#example-target');
         const examplePlane = document.querySelector('#example-plane');
         const startButton = document.querySelector("#example-start-button");
@@ -19,57 +18,42 @@
         const pauseButton = document.querySelector("#example-pause-button");
         const pauseKeepVideoButton = document.querySelector("#example-pause-keep-video-button");
         const unpauseButton = document.querySelector("#example-unpause-button");
-
-        startButton.addEventListener('click', () => { arSystem.start(); });
-        stopButton.addEventListener('click', () => { arSystem.stop(); });
-        pauseButton.addEventListener('click', () => { arSystem.pause(); });
-        pauseKeepVideoButton.addEventListener('click', () => { arSystem.pause(true); });
-        unpauseButton.addEventListener('click', () => { arSystem.unpause(); });
-
-        exampleTarget.addEventListener("targetFound", event => { console.log("target found"); });
-        exampleTarget.addEventListener("targetLost", event => { console.log("target lost"); });
-        examplePlane.addEventListener("click", event => { console.log("plane click"); });
-
-        // --- INTERACTIVIDAD MODELOS (mobile friendly) ---
-        const smurfModelEl = document.querySelector('#smurfModelEl');
-        const robotModelEl = document.querySelector('#robotModelEl');
-        const smurfTargetEl = document.querySelector('[mindar-image-target="targetIndex: 0"]');
-        const robotTargetEl = document.querySelector('[mindar-image-target="targetIndex: 1"]');
-
-        // Dino invisible
-        const dinoEl = document.createElement('a-gltf-model');
-        dinoEl.setAttribute('id', 'dinoModelEl');
-        dinoEl.setAttribute('src', '#dinoModel');
-        dinoEl.setAttribute('scale', '0.5 0.5 0.5');
-        dinoEl.setAttribute('position', '0 0 0');
-        dinoEl.setAttribute('animation-mixer', '');
-        dinoEl.setAttribute('visible', 'false');
-        smurfTargetEl.appendChild(dinoEl);
-
-        // Tiburon invisible
-        const tiburonEl = document.createElement('a-gltf-model');
-        tiburonEl.setAttribute('id', 'tiburonModelEl');
-        tiburonEl.setAttribute('src', '#tiburonModel');
-        tiburonEl.setAttribute('scale', '0.5 0.5 0.5');
-        tiburonEl.setAttribute('position', '0 0 0');
-        tiburonEl.setAttribute('animation-mixer', '');
-        tiburonEl.setAttribute('visible', 'false');
-        robotTargetEl.appendChild(tiburonEl);
-
-        // Función para activar interactividad en móvil y desktop
-        function activateModelInteraction(modelEl, newModelEl) {
-          modelEl.addEventListener('mousedown', () => {
-            modelEl.setAttribute('visible', 'false');
-            newModelEl.setAttribute('visible', 'true');
-          });
-          modelEl.addEventListener('touchstart', () => {
-            modelEl.setAttribute('visible', 'false');
-            newModelEl.setAttribute('visible', 'true');
-          });
-        }
-
-        activateModelInteraction(smurfModelEl, dinoEl);
-        activateModelInteraction(robotModelEl, tiburonEl);
+        startButton.addEventListener('click', () => {
+          console.log("start");
+          arSystem.start(); // start AR 
+        });
+        stopButton.addEventListener('click', () => {
+          arSystem.stop(); // stop AR 
+        });
+        pauseButton.addEventListener('click', () => {
+          arSystem.pause(); // pause AR, pause video
+        });
+        pauseKeepVideoButton.addEventListener('click', () => {
+          arSystem.pause(true); // pause AR, keep video
+        });
+        unpauseButton.addEventListener('click', () => {
+          arSystem.unpause(); // unpause AR and video
+        });
+        // arReady event triggered when ready
+        sceneEl.addEventListener("arReady", (event) => {
+          // console.log("MindAR is ready")
+        });
+        // arError event triggered when something went wrong. Mostly browser compatbility issue
+        sceneEl.addEventListener("arError", (event) => {
+          // console.log("MindAR failed to start")
+        });
+        // detect target found
+        exampleTarget.addEventListener("targetFound", event => {
+          console.log("target found");
+        });
+        // detect target lost
+        exampleTarget.addEventListener("targetLost", event => {
+          console.log("target lost");
+        });
+        // detect click event
+        examplePlane.addEventListener("click", event => {
+          console.log("plane click");
+        });
       });
     </script>
   </head>
@@ -81,49 +65,25 @@
       <button id="example-unpause-button">UnPause</button>
       <button id="example-stop-button">Stop</button>
     </div>
+    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
 
-    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false"
-             color-space="sRGB"
-             renderer="colorManagement: true, physicallyCorrectLights"
-             vr-mode-ui="enabled: false"
-             device-orientation-permission-ui="enabled: false">
+      <!-- Cámara -->
+      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
 
-      <a-camera position="0 0 0"
-                look-controls="enabled: false"
-                cursor="rayOrigin: mouse; fuse: false"
-                raycaster="objects: .clickable">
-      </a-camera>
-
-      <!-- Assets -->
+      <!-- Modelos GLB -->
       <a-assets>
         <a-asset-item id="robotModel" src="robot.glb"></a-asset-item>
         <a-asset-item id="smurfModel" src="smurf.glb"></a-asset-item>
-        <a-asset-item id="dinoModel" src="dino.glb"></a-asset-item>
-        <a-asset-item id="tiburonModel" src="tiburon.glb"></a-asset-item>
       </a-assets>
 
-      <!-- Smurf Target -->
+      <!-- Smurf target -->
       <a-entity id="example-target" mindar-image-target="targetIndex: 0">
-        <a-gltf-model id="smurfModelEl"
-                      src="#smurfModel"
-                      rotation="0 0 0"
-                      position="0 0 0"
-                      scale="1 1 1"
-                      animation-mixer
-                      class="clickable">
-        </a-gltf-model>
+        <a-gltf-model id="smurfModelEl" src="#smurfModel" rotation="0 0 0" position="0 0 0" scale="1 1 1" animation-mixer class="clickable"></a-gltf-model>
       </a-entity>
 
-      <!-- Robot Target -->
+      <!-- Robot target -->
       <a-entity mindar-image-target="targetIndex: 1">
-        <a-gltf-model id="robotModelEl"
-                      src="#robotModel"
-                      rotation="0 0 0"
-                      position="0 0 0"
-                      scale="0.1 0.1 0.1"
-                      animation-mixer
-                      class="clickable">
-        </a-gltf-model>
+        <a-gltf-model id="robotModelEl" src="#robotModel" rotation="0 0 0" position="0 0 0" scale="0.1 0.1 0.1" animation-mixer class="clickable"></a-gltf-model>
       </a-entity>
 
     </a-scene>
