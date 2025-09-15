@@ -30,29 +30,49 @@
         const robotEl = document.querySelector('#robotModelEl');
 
         // Nuevos modelos a reemplazar
-        const newModels = {
-          smurf: 'dino.glb',      // al tocar smurf cambia a dino
-          robot: 'tiburon.glb'    // al tocar robot cambia a tiburon
+        const modelMap = {
+          smurf: {original: '#smurfModel', replacement: '#dinoModel', scale: '0.2 0.2 0.2'},
+          robot: {original: '#robotModel', replacement: '#tiburonModel', scale: '0.1 0.1 0.1'}
         };
 
-        // Función para cambiar modelo al tocar
-        function changeModel(event) {
+        // Estado actual de cada modelo
+        let state = {
+          smurf: 'original',
+          robot: 'original'
+        };
+
+        // Función para alternar modelo
+        function toggleModel(event) {
           const el = event.currentTarget;
           if (el === smurfEl) {
-            el.setAttribute('gltf-model', newModels.smurf);
-            el.setAttribute('scale', '0.2 0.2 0.2'); // ajusta escala según tu modelo
+            if (state.smurf === 'original') {
+              el.setAttribute('gltf-model', modelMap.smurf.replacement);
+              el.setAttribute('scale', modelMap.smurf.scale);
+              state.smurf = 'replacement';
+            } else {
+              el.setAttribute('gltf-model', modelMap.smurf.original);
+              el.setAttribute('scale', '1 1 1');
+              state.smurf = 'original';
+            }
           } else if (el === robotEl) {
-            el.setAttribute('gltf-model', newModels.robot);
-            el.setAttribute('scale', '0.1 0.1 0.1'); // ajusta escala según tu modelo
+            if (state.robot === 'original') {
+              el.setAttribute('gltf-model', modelMap.robot.replacement);
+              el.setAttribute('scale', modelMap.robot.scale);
+              state.robot = 'replacement';
+            } else {
+              el.setAttribute('gltf-model', modelMap.robot.original);
+              el.setAttribute('scale', '0.1 0.1 0.1');
+              state.robot = 'original';
+            }
           }
         }
 
         // Detectar click o toque
-        smurfEl.addEventListener('click', changeModel);
-        smurfEl.addEventListener('touchstart', changeModel);
+        smurfEl.addEventListener('click', toggleModel);
+        smurfEl.addEventListener('touchstart', toggleModel);
 
-        robotEl.addEventListener('click', changeModel);
-        robotEl.addEventListener('touchstart', changeModel);
+        robotEl.addEventListener('click', toggleModel);
+        robotEl.addEventListener('touchstart', toggleModel);
 
         // Eventos AR
         const exampleTarget = document.querySelector('#example-target');
