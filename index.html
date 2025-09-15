@@ -14,7 +14,7 @@
 
         // Texto de interfaz
         const statusText = document.querySelector("#statusText");
-        statusText.style.display = "none"; // oculto al inicio
+        statusText.style.display = "none"; 
 
         // Botones de control AR
         const startButton = document.querySelector("#example-start-button");
@@ -26,11 +26,12 @@
         startButton.addEventListener("click", () => {
           arSystem.start();
           statusText.innerText = " Escanea tu target";
-          statusText.style.display = "block"; // se muestra solo al iniciar AR
+          statusText.style.display = "block"; 
+          startButton.style.display = "none"; // ocultamos el botón una vez iniciado
         });
         stopButton.addEventListener("click", () => {
           arSystem.stop();
-          statusText.style.display = "none"; // ocultar al detener
+          statusText.style.display = "none"; 
         });
         pauseButton.addEventListener("click", () => arSystem.pause());
         pauseKeepVideoButton.addEventListener("click", () => arSystem.pause(true));
@@ -61,20 +62,53 @@
         robotEl.addEventListener("click", changeModel);
         robotEl.addEventListener("touchstart", changeModel);
 
-        // --- Eventos AR para TODOS los targets ---
+        // Eventos AR
         const targets = document.querySelectorAll("[mindar-image-target]");
         targets.forEach((target) => {
           target.addEventListener("targetFound", () => {
-            console.log("target found");
             statusText.innerText = "👉 Toca el modelo";
           });
           target.addEventListener("targetLost", () => {
-            console.log("target lost");
             statusText.innerText = " Escanea tu target";
           });
         });
       });
     </script>
+    <style>
+      /* Solo el botón Start centrado y más grande */
+      #example-start-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 22px;
+        padding: 16px 32px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        z-index: 2000;
+      }
+      #example-start-button:hover {
+        background: #0056b3;
+      }
+      /* Los demás botones quedan normales */
+      #example-pause-button,
+      #example-pause-keep-video-button,
+      #example-unpause-button,
+      #example-stop-button {
+        margin: 5px;
+        padding: 6px 12px;
+      }
+      /* Contenedor de los demás botones */
+      #other-buttons {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+      }
+    </style>
   </head>
   <body>
     <!-- Texto dinámico -->
@@ -86,9 +120,11 @@
        Escanea tu target
     </div>
 
-    <!-- Botones AR -->
-    <div style="position: absolute; z-index: 1000">
-      <button id="example-start-button">Start</button>
+    <!-- Botón Start centrado -->
+    <button id="example-start-button">Start</button>
+
+    <!-- Los demás botones en la esquina -->
+    <div id="other-buttons">
       <button id="example-pause-button">Pause</button>
       <button id="example-pause-keep-video-button">Pause (keep video)</button>
       <button id="example-unpause-button">UnPause</button>
