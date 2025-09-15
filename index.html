@@ -6,14 +6,15 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-        const sceneEl = document.querySelector('a-scene');
+        const sceneEl = document.querySelector("a-scene");
         let arSystem;
-        sceneEl.addEventListener('loaded', function () {
+        sceneEl.addEventListener("loaded", function () {
           arSystem = sceneEl.systems["mindar-image-system"];
         });
 
         // Texto de interfaz
         const statusText = document.querySelector("#statusText");
+        statusText.style.display = "none"; // oculto al inicio
 
         // Botones de control AR
         const startButton = document.querySelector("#example-start-button");
@@ -22,52 +23,55 @@
         const pauseKeepVideoButton = document.querySelector("#example-pause-keep-video-button");
         const unpauseButton = document.querySelector("#example-unpause-button");
 
-        startButton.addEventListener('click', () => {
+        startButton.addEventListener("click", () => {
           arSystem.start();
           statusText.innerText = "📌 Escanea tu target";
+          statusText.style.display = "block"; // se muestra solo al iniciar AR
         });
-        stopButton.addEventListener('click', () => {
+        stopButton.addEventListener("click", () => {
           arSystem.stop();
-          statusText.innerText = "AR detenido";
+          statusText.style.display = "none"; // ocultar al detener
         });
-        pauseButton.addEventListener('click', () => arSystem.pause());
-        pauseKeepVideoButton.addEventListener('click', () => arSystem.pause(true));
-        unpauseButton.addEventListener('click', () => arSystem.unpause());
+        pauseButton.addEventListener("click", () => arSystem.pause());
+        pauseKeepVideoButton.addEventListener("click", () => arSystem.pause(true));
+        unpauseButton.addEventListener("click", () => arSystem.unpause());
 
         // Modelos
-        const smurfEl = document.querySelector('#smurfModelEl');
-        const robotEl = document.querySelector('#robotModelEl');
+        const smurfEl = document.querySelector("#smurfModelEl");
+        const robotEl = document.querySelector("#robotModelEl");
 
         const newModels = {
-          smurf: 'dino.glb',
-          robot: 'cathat.glb'
+          smurf: "dino.glb",
+          robot: "cathat.glb"
         };
 
         function changeModel(event) {
           const el = event.currentTarget;
           if (el === smurfEl) {
-            el.setAttribute('gltf-model', newModels.smurf);
-            el.setAttribute('scale', '0.5 0.5 0.5');
+            el.setAttribute("gltf-model", newModels.smurf);
+            el.setAttribute("scale", "0.5 0.5 0.5");
           } else if (el === robotEl) {
-            el.setAttribute('gltf-model', newModels.robot);
-            el.setAttribute('scale', '0.3 0.3 0.3');
+            el.setAttribute("gltf-model", newModels.robot);
+            el.setAttribute("scale", "0.3 0.3 0.3");
           }
         }
 
-        smurfEl.addEventListener('click', changeModel);
-        smurfEl.addEventListener('touchstart', changeModel);
-        robotEl.addEventListener('click', changeModel);
-        robotEl.addEventListener('touchstart', changeModel);
+        smurfEl.addEventListener("click", changeModel);
+        smurfEl.addEventListener("touchstart", changeModel);
+        robotEl.addEventListener("click", changeModel);
+        robotEl.addEventListener("touchstart", changeModel);
 
-        // Eventos AR
-        const exampleTarget = document.querySelector('#example-target');
-        exampleTarget.addEventListener("targetFound", () => {
-          console.log("target found");
-          statusText.innerText = "👉 Toca el modelo";
-        });
-        exampleTarget.addEventListener("targetLost", () => {
-          console.log("target lost");
-          statusText.innerText = "📌 Escanea tu target";
+        // --- Eventos AR para TODOS los targets ---
+        const targets = document.querySelectorAll("[mindar-image-target]");
+        targets.forEach((target) => {
+          target.addEventListener("targetFound", () => {
+            console.log("target found");
+            statusText.innerText = "👉 Toca el modelo";
+          });
+          target.addEventListener("targetLost", () => {
+            console.log("target lost");
+            statusText.innerText = "📌 Escanea tu target";
+          });
         });
       });
     </script>
@@ -75,10 +79,10 @@
   <body>
     <!-- Texto dinámico -->
     <div id="statusText" 
-         style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+         style="position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
                 background: rgba(0,0,0,0.6); color: white; padding: 10px 16px; 
                 border-radius: 10px; font-family: sans-serif; font-size: 16px; 
-                z-index: 2000; text-align: center;">
+                z-index: 2000; text-align: center; display: none;">
       📌 Escanea tu target
     </div>
 
