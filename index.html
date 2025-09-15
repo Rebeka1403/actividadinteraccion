@@ -2,106 +2,62 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        const sceneEl = document.querySelector("a-scene");
-        let arSystem;
-        sceneEl.addEventListener("loaded", function () {
-          arSystem = sceneEl.systems["mindar-image-system"];
-        });
+    <style>
+      body { margin: 0; overflow: hidden; }
 
-        // Texto de interfaz
-        const statusText = document.querySelector("#statusText");
-        statusText.style.display = "none"; // oculto al inicio
+      /* Botón centrado y grande */
+      #start-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px 40px;
+        font-size: 24px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        z-index: 3000;
+      }
 
-        // Botones de control AR
-        const startButton = document.querySelector("#example-start-button");
-        const stopButton = document.querySelector("#example-stop-button");
-        const pauseButton = document.querySelector("#example-pause-button");
-        const pauseKeepVideoButton = document.querySelector("#example-pause-keep-video-button");
-        const unpauseButton = document.querySelector("#example-unpause-button");
-
-        startButton.addEventListener("click", () => {
-          arSystem.start();
-          statusText.innerText = "📌 Escanea tu target";
-          statusText.style.display = "block"; // se muestra solo al iniciar AR
-        });
-        stopButton.addEventListener("click", () => {
-          arSystem.stop();
-          statusText.style.display = "none"; // ocultar al detener
-        });
-        pauseButton.addEventListener("click", () => arSystem.pause());
-        pauseKeepVideoButton.addEventListener("click", () => arSystem.pause(true));
-        unpauseButton.addEventListener("click", () => arSystem.unpause());
-
-        // Modelos
-        const smurfEl = document.querySelector("#smurfModelEl");
-        const robotEl = document.querySelector("#robotModelEl");
-
-        const newModels = {
-          smurf: "dino.glb",
-          robot: "cathat.glb"
-        };
-
-        function changeModel(event) {
-          const el = event.currentTarget;
-          if (el === smurfEl) {
-            el.setAttribute("gltf-model", newModels.smurf);
-            el.setAttribute("scale", "0.5 0.5 0.5");
-          } else if (el === robotEl) {
-            el.setAttribute("gltf-model", newModels.robot);
-            el.setAttribute("scale", "0.3 0.3 0.3");
-          }
-        }
-
-        smurfEl.addEventListener("click", changeModel);
-        smurfEl.addEventListener("touchstart", changeModel);
-        robotEl.addEventListener("click", changeModel);
-        robotEl.addEventListener("touchstart", changeModel);
-
-        // --- Eventos AR para TODOS los targets ---
-        const targets = document.querySelectorAll("[mindar-image-target]");
-        targets.forEach((target) => {
-          target.addEventListener("targetFound", () => {
-            console.log("target found");
-            statusText.innerText = "👉 Toca el modelo";
-          });
-          target.addEventListener("targetLost", () => {
-            console.log("target lost");
-            statusText.innerText = "📌 Escanea tu target";
-          });
-        });
-      });
-    </script>
+      /* Texto de instrucciones */
+      #instruction {
+        position: absolute;
+        bottom: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 20px;
+        font-family: sans-serif;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        display: none;
+        z-index: 2000;
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
-    <!-- Texto dinámico -->
-    <div id="statusText" 
-         style="position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
-                background: rgba(0,0,0,0.6); color: white; padding: 10px 16px; 
-                border-radius: 10px; font-family: sans-serif; font-size: 16px; 
-                z-index: 2000; text-align: center; display: none;">
-      📌 Escanea tu target
-    </div>
+    <!-- Botón inicial -->
+    <button id="start-button">Start</button>
 
-    <!-- Botones AR -->
-    <div style="position: absolute; z-index: 1000">
-      <button id="example-start-button">Start</button>
-      <button id="example-pause-button">Pause</button>
-      <button id="example-pause-keep-video-button">Pause (keep video)</button>
-      <button id="example-unpause-button">UnPause</button>
-      <button id="example-stop-button">Stop</button>
-    </div>
+    <!-- Texto de instrucciones -->
+    <div id="instruction">Escanea tu target</div>
 
-    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false" 
-             color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
-             vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-      
-      <a-camera position="0 0 0" look-controls="enabled: false" 
-                cursor="fuse: false; rayOrigin: mouse;" 
-                raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+    <a-scene mindar-image="imageTargetSrc: targets6.mind; maxTrack: 2; autoStart: false"
+             color-space="sRGB"
+             renderer="colorManagement: true, physicallyCorrectLights"
+             vr-mode-ui="enabled: false"
+             device-orientation-permission-ui="enabled: false"
+             id="example-scene">
+
+      <a-camera position="0 0 0" look-controls="enabled: false"
+                cursor="fuse: false; rayOrigin: mouse;"
+                raycaster="near: 10; far: 10000; objects: .clickable">
+      </a-camera>
 
       <a-assets>
         <a-asset-item id="robotModel" src="robot.glb"></a-asset-item>
@@ -110,20 +66,43 @@
         <a-asset-item id="catModel" src="cathat.glb"></a-asset-item>
       </a-assets>
 
-      <!-- Target con modelo Smurf -->
-      <a-entity id="example-target" mindar-image-target="targetIndex: 0">
-        <a-gltf-model id="smurfModelEl" src="#smurfModel" 
-                      rotation="0 0 0" position="0 0 0" scale="1 1 1" 
+      <!-- Target Smurf -->
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-gltf-model id="smurfModelEl" src="#smurfModel"
+                      rotation="0 0 0" position="0 0 0" scale="1 1 1"
                       animation-mixer class="clickable"></a-gltf-model>
       </a-entity>
 
-      <!-- Target con modelo Robot -->
+      <!-- Target Robot -->
       <a-entity mindar-image-target="targetIndex: 1">
-        <a-gltf-model id="robotModelEl" src="#robotModel" 
-                      rotation="0 0 0" position="0 0 0" scale="0.1 0.1 0.1" 
+        <a-gltf-model id="robotModelEl" src="#robotModel"
+                      rotation="0 0 0" position="0 0 0" scale="0.1 0.1 0.1"
                       animation-mixer class="clickable"></a-gltf-model>
       </a-entity>
-
     </a-scene>
+
+    <script>
+      const startButton = document.getElementById("start-button");
+      const sceneEl = document.querySelector("a-scene");
+      const mindarComponent = sceneEl.components["mindar-image"];
+      const instruction = document.getElementById("instruction");
+
+      // Al presionar Start
+      startButton.addEventListener("click", () => {
+        startButton.style.display = "none"; // ocultar botón
+        mindarComponent.start();            // iniciar AR
+        instruction.style.display = "block"; // mostrar instrucciones
+      });
+
+      // Cuando aparece un target
+      sceneEl.addEventListener("targetFound", () => {
+        instruction.innerText = "Toca el modelo";
+      });
+
+      // Cuando se pierde el target
+      sceneEl.addEventListener("targetLost", () => {
+        instruction.innerText = "Escanea tu target";
+      });
+    </script>
   </body>
 </html>
